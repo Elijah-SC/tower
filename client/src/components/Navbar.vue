@@ -21,9 +21,7 @@ function toggleTheme() {
   <nav class="navbar navbar-expand-sm navbar-dark bg-dark px-3">
     <router-link class="navbar-brand d-flex" :to="{ name: 'Home' }">
       <div class="d-flex flex-column align-items-center">
-        <img alt="logo"
-          src="https://st3.depositphotos.com/4265001/13564/v/450/depositphotos_135644428-stock-illustration-giraffe-head-in-circle.jpg"
-          height="45" />
+        <img alt="logo" src="img\Group.png" height="45" />
       </div>
     </router-link>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
