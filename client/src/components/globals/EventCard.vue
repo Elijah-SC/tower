@@ -10,7 +10,7 @@ defineProps({
 <template>
   <router-link :to="{ name: 'Event', params: { eventId: event.id } }">
 
-    <body class="card h-100">
+    <body class="card card-height">
       <img :src="event.coverImg" :alt="event.name" class="card-img-top card-img">
       <div class="card-body">
         <h5 class="card-title">{{ event.name }} <span v-html="event.typeIcon" :title="event.type"></span></h5>
@@ -28,5 +28,9 @@ defineProps({
   height: 25vh;
   object-fit: cover;
   object-position: center;
+}
+
+.card-height {
+  height: 50vh;
 }
 </style>
