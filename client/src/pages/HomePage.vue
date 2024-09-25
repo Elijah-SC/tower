@@ -1,12 +1,15 @@
 <script setup>
 import { AppState } from "@/AppState.js";
 import EventCard from "@/components/globals/EventCard.vue";
+import EventForm from "@/components/globals/EventForm.vue";
+import Modal from "@/components/Modal.vue";
 import { eventService } from "@/services/EventService.js";
 import { logger } from "@/utils/Logger.js";
 import Pop from "@/utils/Pop.js";
 import { computed, onMounted, ref } from "vue";
 onMounted(() => getAllEvents())
 
+const account = computed(() => AppState.account)
 const filterBy = ref(`all`)
 const events = computed(() => {
   if (filterBy.value == `all`) {
@@ -28,10 +31,17 @@ async function getAllEvents() {
 
 </script>
 <template>
+  <Modal id="event-form">
+    <EventForm />
+  </Modal>
 
-  <body class="container">
-    <section class="row">
-      <div class="col-12">
+  <body class="container-fluid">
+    <section class="row justify-content-around">
+      <div class="col-8 text-center">
+        <button v-if="account" class="btn btn-info p-4" data-bs-target="#event-form" data-bs-toggle="modal">Create
+          Event</button>
+      </div>
+      <div class="col-8">
         <div class="row my-2 justify-content-around">
           <div class="col-2 text-center">
             <button @click="filterBy = `all`" class="btn btn-success p-4 w-100">All</button>
@@ -41,7 +51,7 @@ async function getAllEvents() {
           </div>
         </div>
       </div>
-      <div class="col-12">
+      <div class="col-8">
         <div class="row mx-3">
           <div v-for="event in events" :key="event.id" class="col-md-4 h-100">
             <div class="my-2">
