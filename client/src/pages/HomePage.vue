@@ -41,17 +41,17 @@ async function getAllEvents() {
         <button v-if="account" class="btn btn-info p-4" data-bs-target="#event-form" data-bs-toggle="modal">Create
           Event</button>
       </div>
-      <div class="col-8">
+      <div class="col-10">
         <div class="row my-2 justify-content-around">
-          <div class="col-2 text-center">
+          <div class="col-6 col-md-2 my-2 text-center">
             <button @click="filterBy = `all`" class="btn btn-success p-4 w-100">All</button>
           </div>
-          <div v-for="category in filterCategory" :key="category" class="col-2 text-center">
+          <div v-for="category in filterCategory" :key="category" class="col-6 col-md-2 text-center my-2">
             <button @click="filterBy = category" class="btn btn-success p-4 w-100">{{ category }}</button>
           </div>
         </div>
       </div>
-      <div class="col-8">
+      <div class="col-11">
         <div class="row mx-3">
           <div v-for="event in events" :key="event.id" class="col-md-4 h-100">
             <div class="my-2">

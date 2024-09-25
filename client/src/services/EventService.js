@@ -4,6 +4,13 @@ import { TowerEvent } from "@/models/TowerEvent.js"
 import { AppState } from "@/AppState.js"
 
 class EventService {
+  async createEvent(EventData) {
+    const response = await api.post(`api/events`, EventData)
+    logger.log(`created Event`, response.data)
+    const newEvent = new TowerEvent(response.data)
+    AppState.events.push(newEvent)
+    return newEvent
+  }
   async findEventById(eventId) {
     const response = await api.get(`api/events/${eventId}`)
     // console.log(`found event wid Id of ${eventId}`, response.data);
