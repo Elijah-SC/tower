@@ -1,7 +1,6 @@
 <script setup>
 import { AppState } from "@/AppState.js";
 import EventAttendees from "@/components/globals/EventAttendees.vue";
-import { Ticket } from "@/models/Ticket.js";
 import { eventService } from "@/services/EventService.js";
 import { ticketService } from "@/services/TicketService.js";
 import { logger } from "@/utils/Logger.js";
@@ -22,6 +21,13 @@ const isCreator = computed(() => {
   if (!account.value) return false
   if (!activeEvent.value) return false
   if (account.value.id != activeEvent.value.creatorId) return false
+  return true
+})
+
+const isAttending = computed(() => {
+  if (AppState.identity == null) return false
+  const attendingEvent = AppState.eventAttendees.find(ticket => ticket.accountId == AppState.account?.id)
+  if (!attendingEvent) return false
   return true
 })
 
@@ -81,6 +87,19 @@ async function createTicket() {
     logger.log(error)
   }
 }
+
+async function deleteTicket() {
+  try {
+    const confirm = await Pop.confirm(`Are you sure you want to cancel your Ticket`, `Someone could steal your spot!`, `confirm`, `warning`)
+    if (!confirm) return
+    const foundTicket = AppState.eventAttendees.find(ticket => ticket.accountId == AppState.account?.id)
+    const ticketId = foundTicket.id
+    await ticketService.deleteTicket(ticketId)
+  } catch (error) {
+    Pop.error(error)
+    logger.error(error)
+  }
+}
 </script>
 
 
@@ -93,6 +112,8 @@ async function createTicket() {
           <img :src="activeEvent.coverImg" alt="Event CoverImg" class="img-fluid w-100 cover-img">
           <span v-if="activeEvent.isCanceled"
             class="canceled text-center ms-2 rounded-pill text-light fs-3">Cancelled</span>
+          <span v-else-if="!SpotsAvailable" class="sold-out text-center ms-2 rounded-pill text-light fs-3">Sold
+            Out</span>
         </div>
       </div>
     </div>
@@ -122,21 +143,26 @@ async function createTicket() {
           <p><i class="mdi mdi-map-marker text-info"></i>{{ activeEvent.location }}</p>
         </div>
       </div>
-      <div v-if="activeEvent" class="col-md-2">
-        <div class="ticket-box text-center p-2 mt-5 rounded">
-          <h5>Interested in Going?</h5>
-          <p>Grab a ticket!</p>
-          <button v-if="activeEvent.isCanceled" class="btn btn-danger" disabled> Cancelled </button>
-          <button @click="createTicket()" v-else-if="SpotsAvailable" class="btn btn-primary">Attend</button>
-          <button v-else disabled class="btn btn-danger">SOLD OUT</button>
+      <div class="col-md-2 d-flex flex-column justify-content-between">
+        <div v-if="account">
+          <div class="ticket-box text-center p-2 mt-5 rounded">
+            <h5>Interested in Going?</h5>
+            <p>Grab a ticket!</p>
+            <button v-if="activeEvent.isCanceled" class="btn btn-danger" disabled> Cancelled </button>
+            <button v-else-if="isAttending" @click="deleteTicket()" class="btn btn-danger">Cancel Ticket</button>
+            <button v-else-if="SpotsAvailable" @click="createTicket()" class="btn btn-primary">Attend</button>
+            <button v-else disabled class="btn btn-danger">SOLD OUT</button>
+          </div>
+          <p v-if="!activeEvent.isCanceled" class="text-end">{{ activeEvent.capacity -
+            parseInt(activeEvent.ticketCount) }} spots left</p>
         </div>
-        <p v-if="!activeEvent.isCanceled" class="text-end">{{ activeEvent.capacity -
-          parseInt(activeEvent.ticketCount)
-          }} spots left</p>
-        <h5 class="fw-bold mt">Attendees</h5>
-        <div class="ticket-box p-2 rounded">
-          <div v-for="attendee in eventAttendees" :key="attendee.profile.id">
-            <EventAttendees :attendee="attendee" />
+        <div>
+
+          <h5 class="fw-bold">Attendees</h5>
+          <div class="ticket-box p-2 rounded">
+            <div v-for="attendee in eventAttendees" :key="attendee.profile.id">
+              <EventAttendees :attendee="attendee" />
+            </div>
           </div>
         </div>
       </div>
@@ -156,6 +182,15 @@ async function createTicket() {
 
 .canceled {
   background-color: rgba(255, 0, 0, 0.511);
+  backdrop-filter: blur(5px);
+  width: 50%;
+  position: absolute;
+  left: 10%;
+  top: 42%;
+}
+
+.sold-out {
+  background-color: rgba(0, 0, 255, 0.599);
   backdrop-filter: blur(5px);
   width: 50%;
   position: absolute;

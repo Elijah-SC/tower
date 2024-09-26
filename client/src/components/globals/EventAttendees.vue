@@ -9,7 +9,7 @@ defineProps({
 
 
 <template>
-  <div class="d-flex align-items-center mb-2">
+  <div class="d-flex align-items-center my-2">
     <img :src="attendee.profile.picture" :alt="attendee.profile.name">
     <p class="mb-0 ps-3">{{ attendee.profile.name }}</p>
   </div>

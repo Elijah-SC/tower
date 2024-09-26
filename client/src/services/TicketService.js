@@ -5,6 +5,13 @@ import { AppState } from "@/AppState.js"
 import { TicketProfile } from "@/models/Ticket.js"
 
 class TicketService {
+  async deleteTicket(ticketId) {
+    const response = await api.delete(`api/tickets/${ticketId}`)
+    logger.log(response.data)
+    const TicketIndex = AppState.eventAttendees.findIndex(ticket => ticket.id == ticketId)
+    AppState.eventAttendees.splice(TicketIndex, 1)
+    AppState.activeEvent.ticketCount--
+  }
   async createTicket(ticketData) {
     const response = await api.post(`api/tickets`, ticketData)
     logger.log(response.data)
