@@ -1,5 +1,6 @@
 import { dbContext } from "../db/DbContext.js"
 import { Forbidden } from "../utils/Errors.js"
+import { towerEventService } from "./TowerEventService.js"
 
 class TicketService {
   async getEventTickets(eventId) {
@@ -17,6 +18,9 @@ class TicketService {
     return `you are no longer attending this Event`
   }
   async createTicket(ticketData) {
+    const eventId = ticketData.eventId
+    const foundEvent = await towerEventService.getEventById(eventId)
+    if (foundEvent.isCanceled == true) throw new Error(`Cannot attend cancelled event`)
     const ticket = await dbContext.Tickets.create(ticketData)
     await ticket.populate(`event`)
     await ticket.populate(`profile`, `picture name`)

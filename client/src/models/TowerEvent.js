@@ -14,7 +14,8 @@ export class TowerEvent {
     this.createdAt = new Date(data.createdAt)
     this.updatedAt = new Date(data.updatedAt)
     this.type = data.type
-    this.creator = new Account(data.creator)
+    this.creator = data.creator ? new Account(data.creator) : null
+    this.ticketCount = data.ticketCount
   }
 
   get typeIcon() {

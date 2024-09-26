@@ -1,6 +1,9 @@
 <script setup>
 import { AppState } from "@/AppState.js";
+import EventAttendees from "@/components/globals/EventAttendees.vue";
+import { Ticket } from "@/models/Ticket.js";
 import { eventService } from "@/services/EventService.js";
+import { ticketService } from "@/services/TicketService.js";
 import { logger } from "@/utils/Logger.js";
 import Pop from "@/utils/Pop.js";
 import { computed, watch } from "vue";
@@ -9,14 +12,21 @@ import { useRoute } from "vue-router";
 const activeEvent = computed(() => AppState.activeEvent)
 const account = computed(() => AppState.account)
 const route = useRoute()
+const eventAttendees = computed(() => AppState.eventAttendees)
 watch(() => route.params.eventId, () => {
   findEventById()
+  findTicketsByEvent()
 }, { immediate: true })
 
 const isCreator = computed(() => {
   if (!account.value) return false
   if (!activeEvent.value) return false
   if (account.value.id != activeEvent.value.creatorId) return false
+  return true
+})
+
+const SpotsAvailable = computed(() => {
+  if (activeEvent.value.capacity == parseInt(activeEvent.value.ticketCount)) return false
   return true
 })
 
@@ -48,6 +58,29 @@ async function cancelEvent() {
     logger.log(error)
   }
 }
+
+async function findTicketsByEvent() {
+  try {
+    const eventId = route.params.eventId
+    await ticketService.findTicketsByEvent(eventId)
+  }
+  catch (error) {
+    Pop.error(error);
+    logger.error(error)
+  }
+}
+
+async function createTicket() {
+  try {
+    const ticketData = {
+      eventId: route.params.eventId
+    }
+    await ticketService.createTicket(ticketData)
+  } catch (error) {
+    Pop.error(error)
+    logger.log(error)
+  }
+}
 </script>
 
 
@@ -64,7 +97,7 @@ async function cancelEvent() {
       </div>
     </div>
     <div class="row justify-content-center gap-2">
-      <div class="col-8">
+      <div class="col-md-8">
         <div class="d-flex justify-content-between">
           <h1>{{ activeEvent.name }} <span v-html="activeEvent.typeIcon"></span></h1>
           <div>
@@ -89,7 +122,24 @@ async function cancelEvent() {
           <p><i class="mdi mdi-map-marker text-info"></i>{{ activeEvent.location }}</p>
         </div>
       </div>
-      <div class="col-2"></div>
+      <div v-if="activeEvent" class="col-md-2">
+        <div class="ticket-box text-center p-2 mt-5 rounded">
+          <h5>Interested in Going?</h5>
+          <p>Grab a ticket!</p>
+          <button v-if="activeEvent.isCanceled" class="btn btn-danger" disabled> Cancelled </button>
+          <button @click="createTicket()" v-else-if="SpotsAvailable" class="btn btn-primary">Attend</button>
+          <button v-else disabled class="btn btn-danger">SOLD OUT</button>
+        </div>
+        <p v-if="!activeEvent.isCanceled" class="text-end">{{ activeEvent.capacity -
+          parseInt(activeEvent.ticketCount)
+          }} spots left</p>
+        <h5 class="fw-bold mt">Attendees</h5>
+        <div class="ticket-box p-2 rounded">
+          <div v-for="attendee in eventAttendees" :key="attendee.profile.id">
+            <EventAttendees :attendee="attendee" />
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </template>
@@ -111,5 +161,17 @@ async function cancelEvent() {
   position: absolute;
   left: 10%;
   top: 42%;
+}
+
+.ticket-box {
+  background-color: rgb(233, 233, 233);
+}
+
+body {
+  min-height: 100vh;
+}
+
+.mt {
+  margin-top: 10em;
 }
 </style>
