@@ -11,7 +11,10 @@ defineProps({
   <router-link :to="{ name: 'Event', params: { eventId: event.id } }">
 
     <body class="card card-height">
-      <img :src="event.coverImg" :alt="event.name" class="card-img-top card-img">
+      <div>
+        <img :src="event.coverImg" :alt="event.name" class="card-img-top card-img">
+        <span v-if="event.isCanceled" class="canceled text-center ms-2 rounded-pill text-light fs-5">Cancelled</span>
+      </div>
       <div class="card-body">
         <h5 class="card-title">{{ event.name }} <span v-html="event.typeIcon" :title="event.type"></span></h5>
         <p>Hosted by {{ event.creator.name }}</p>
@@ -28,9 +31,19 @@ defineProps({
   height: 25vh;
   object-fit: cover;
   object-position: center;
+  position: relative;
 }
 
 .card-height {
   height: 50vh;
+}
+
+.canceled {
+  background-color: rgba(255, 0, 0, 0.511);
+  backdrop-filter: blur(5px);
+  width: 50%;
+  position: absolute;
+  left: 0;
+  top: 42%;
 }
 </style>

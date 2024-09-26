@@ -1,17 +1,29 @@
-import auth0provider, { Auth0Provider } from "@bcwdev/auth0provider";
+import { Auth0Provider } from "@bcwdev/auth0provider";
 import BaseController from "../utils/BaseController.js";
-import { towerEventService } from "../services/TowerEvents.js";
+import { towerEventService } from "../services/TowerEventService.js";
+import { ticketService } from "../services/TicketService.js";
 
-export class TowerEvents extends BaseController {
+export class TowerEventsController extends BaseController {
   constructor() {
     super(`api/events`)
     this.router
       .get(``, this.getAllEvents)
       .get(`/:eventId`, this.getEventById)
+      .get(`/:eventId/tickets`, this.getEventTickets)
       .use(Auth0Provider.getAuthorizedUserInfo)
       .post(``, this.createEvent)
       .put(`/:eventId`, this.updateEvent)
       .delete(`/:eventId`, this.cancelEvent)
+
+  }
+  async getEventTickets(request, response, next) {
+    try {
+      const eventId = request.params.eventId
+      const tickets = await ticketService.getEventTickets(eventId)
+      response.send(tickets)
+    } catch (error) {
+      next(error)
+    }
   }
   async cancelEvent(request, response, next) {
     try {

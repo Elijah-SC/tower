@@ -25,20 +25,22 @@ class TowerEventService {
 
     eventToCancel.isCanceled = !eventToCancel.isCanceled
     await eventToCancel.save()
+    if (!eventToCancel.isCanceled) return 'Event has been reactivated'
     return `Event has been Canceled`
   }
   async getEventById(eventId) {
-    const foundEvent = await dbContext.Event.findById(eventId).populate(`creator`, `-email -subs`)
+    const foundEvent = await (await dbContext.Events.findById(eventId).populate(`creator`, `-email -subs`)).populate(`ticketCount`)
     if (foundEvent == null) throw new NotFound(`Id not found`)
     return foundEvent
   }
   async getAllEvents() {
-    const events = await dbContext.Event.find().populate(`creator`, `-email, -subs`)
+    const events = await dbContext.Events.find().populate(`creator`, `-email, -subs`).populate(`ticketCount`)
     return events
   }
   async createEvent(eventData) {
-    const createdEvent = await dbContext.Event.create(eventData)
+    const createdEvent = await dbContext.Events.create(eventData)
     await createdEvent.populate(`creator`, `-email -subs`)
+    await createdEvent.populate(`ticketCount`)
     return createdEvent
   }
 
