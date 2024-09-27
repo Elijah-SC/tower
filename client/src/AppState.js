@@ -13,6 +13,8 @@ export const AppState = reactive({
   /** @type {import('./models/Ticket.js').TicketProfile[]}*/
   eventAttendees: [],
   /** @type {import('./models/Ticket.js').TicketEvent[]}*/
-  accountEvents: []
+  accountEvents: [],
+  /** @type {import('./models/Comment.js').Comment[]}*/
+  activeEventComments: []
 })
 

@@ -1,20 +1,29 @@
 <script setup>
 import { AppState } from "@/AppState.js";
+import Comment from "@/components/globals/Comment.vue";
 import EventAttendees from "@/components/globals/EventAttendees.vue";
+import { commentService } from "@/services/CommentService.js";
 import { eventService } from "@/services/EventService.js";
 import { ticketService } from "@/services/TicketService.js";
 import { logger } from "@/utils/Logger.js";
 import Pop from "@/utils/Pop.js";
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const activeEvent = computed(() => AppState.activeEvent)
 const account = computed(() => AppState.account)
 const route = useRoute()
 const eventAttendees = computed(() => AppState.eventAttendees)
+const comments = computed(() => AppState.activeEventComments)
+
+const commentData = ref({
+  eventId: route.params.eventId,
+  body: ``,
+})
 watch(() => route.params.eventId, () => {
   findEventById()
   findTicketsByEvent()
+  getEventComments()
 }, { immediate: true })
 
 const isCreator = computed(() => {
@@ -99,6 +108,28 @@ async function deleteTicket() {
     Pop.error(error)
     logger.error(error)
   }
+
+}
+
+async function createEventComment() {
+  try {
+    const commentBody = commentData.value
+    await commentService.createComment(commentBody)
+  } catch (error) {
+    Pop.error(error)
+    logger.log(error)
+  }
+}
+
+async function getEventComments() {
+  try {
+    const eventId = route.params.eventId
+    await commentService.getEventComments(eventId)
+  }
+  catch (error) {
+    Pop.error(error)
+    logger.log(error)
+  }
 }
 </script>
 
@@ -145,8 +176,30 @@ async function deleteTicket() {
           <h4>Location</h4>
           <p><i class="mdi mdi-map-marker text-info"></i>{{ activeEvent.location }}</p>
         </div>
+        <div class="mt">
+          <h5>See What folks are saying..</h5>
+          <div class="w-100 comment-box p-2">
+            <div>
+              <p class="text-end text-success mb-0">Join the conversation</p>
+              <form @submit.prevent="createEventComment()">
+                <div>
+                  <textarea v-model="commentData.body" name="comment" class="form-control rounded bg-white text-fade"
+                    required minlength="5" maxlength="200">Tell the people</textarea>
+                </div>
+                <div class="w-100 text-end">
+                  <button class="btn btn-success mt-2" action="submit">Comment</button>
+                </div>
+              </form>
+            </div>
+            <div v-if="activeEvent">
+              <div v-for="comment in comments" :key="comment.id">
+                <Comment :commentProp="comment" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-3 d-flex flex-column justify-content-between">
+      <div class="col-md-3 d-flex flex-column gap-5">
         <div v-if="account">
           <div class="mt-5">
             <p v-if="isAttending" class="text-end text-success mt-5 mb-0 small">You are Attending This Event</p>
@@ -174,6 +227,9 @@ async function deleteTicket() {
       </div>
     </div>
   </body>
+  <div v-else class="text-center">
+    <h1>Loading... <i class="mdi mdi-loading mdi-spin"></i></h1>
+  </div>
 </template>
 
 
@@ -218,5 +274,13 @@ body {
 
 .small {
   font-size: 12px;
+}
+
+.comment-box {
+  background-color: rgb(233, 233, 233);
+}
+
+.text-fade {
+  color: rgba(0, 0, 0, 0.622);
 }
 </style>

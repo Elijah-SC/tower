@@ -17,6 +17,7 @@ class EventService {
     return newEvent
   }
   async findEventById(eventId) {
+    AppState.activeEvent = null
     const response = await api.get(`api/events/${eventId}`)
     // console.log(`found event wid Id of ${eventId}`, response.data);
     const newEvent = new TowerEvent(response.data)

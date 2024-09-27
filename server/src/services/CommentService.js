@@ -6,7 +6,7 @@ class CommentService {
   async deleteComment(commentId, userId) {
     const commentToDelete = await dbContext.Comments.findById(commentId)
     const foundEvent = await towerEventService.getEventById(commentToDelete.eventId)
-    if (userId != commentToDelete.creatorId || userId != foundEvent.creatorId) throw new Forbidden(`Invalid Creditanails`)
+    if (userId != commentToDelete.creatorId) throw new Forbidden(`Invalid Creditanails`)
     await commentToDelete.deleteOne()
     return `deleted Comment`
   }
