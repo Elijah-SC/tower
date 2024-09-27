@@ -29,7 +29,7 @@ class TowerEventService {
     return `Event has been Canceled`
   }
   async getEventById(eventId) {
-    const foundEvent = await (await dbContext.Events.findById(eventId).populate(`creator`, `-email -subs`)).populate(`ticketCount`)
+    const foundEvent = await dbContext.Events.findById(eventId).populate(`creator`, `-email -subs`).populate(`ticketCount`)
     if (foundEvent == null) throw new NotFound(`Id not found`)
     return foundEvent
   }
