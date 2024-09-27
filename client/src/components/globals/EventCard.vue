@@ -19,8 +19,8 @@ defineProps({
       </div>
       <div class="card-body">
         <h5 class="card-title">{{ event.name }} <span v-html="event.typeIcon" :title="event.type"></span></h5>
-        <p>Hosted by {{ event.creator.name }}</p>
-        <p>Hosted at {{ event.location }} on {{ event.startDate.toLocaleDateString() }}</p>
+        <p v-if="event.creator">Hosted by {{ event.creator?.name }}</p>
+        <p>Hosted at {{ event.location }} on {{ event.startDate?.toLocaleDateString() }}</p>
       </div>
     </body>
   </router-link>

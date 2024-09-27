@@ -2,9 +2,15 @@ import { logger } from "@/utils/Logger.js"
 import { api } from "./AxiosService.js"
 import { Profile } from "@/models/Profile.js"
 import { AppState } from "@/AppState.js"
-import { TicketProfile } from "@/models/Ticket.js"
+import { TicketEvent, TicketProfile } from "@/models/Ticket.js"
 
 class TicketService {
+  async getAccountTickets() {
+    const response = await api.get(`/account/tickets`)
+    logger.log(`got tickets by Event`, response.data)
+    const newAccountTickets = response.data.map(ticketData => new TicketEvent(ticketData))
+    AppState.accountEvents = newAccountTickets
+  }
   async deleteTicket(ticketId) {
     const response = await api.delete(`api/tickets/${ticketId}`)
     logger.log(response.data)

@@ -8,7 +8,13 @@ class TicketService {
     return eventTickets
   }
   async getMyTickets(userId) {
-    const userTickets = await dbContext.Tickets.find({ accountId: userId }).populate(`event`)
+    const userTickets = await dbContext.Tickets.find({ accountId: userId }).populate({
+      path: 'event',
+      populate: {
+        path: 'ticketCount',
+        model: `TowerEvent`
+      }
+    })
     return userTickets
   }
   async deleteTicket(ticketId, userId) {

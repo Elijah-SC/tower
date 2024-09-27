@@ -120,7 +120,10 @@ async function deleteTicket() {
     <div class="row justify-content-center gap-2">
       <div class="col-md-7">
         <div class="d-flex justify-content-between">
-          <h1>{{ activeEvent.name }} <span v-html="activeEvent.typeIcon"></span></h1>
+          <div>
+            <h1>{{ activeEvent.name }} <span v-html="activeEvent.typeIcon"></span></h1>
+            <p>Hosted by {{ activeEvent.creator.name }}</p>
+          </div>
           <div>
             <button @click="cancelEvent()" v-if="isCreator && !activeEvent.isCanceled"
               class="btn btn-outline-dark">Cancel Event</button>
