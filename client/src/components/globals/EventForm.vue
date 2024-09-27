@@ -62,7 +62,7 @@ function resetForm() {
         <input required v-model="formData.name" type="text" minlength="3" maxlength="50" class="form-control">
       </div>
       <div class="row justify-content-around align-items-center">
-        <div class="col-sm-4">
+        <div class="col-sm-4 mb-3">
           <label class="form-label" for="Capacity">Capacity</label>
           <input required v-model="formData.capacity" type="number" min="1" maxlength="5000" class="form-control">
         </div>
@@ -92,6 +92,10 @@ function resetForm() {
         <textarea required v-model="formData.description" class="form-control" minlength="15" maxlength="1000"
           name="description"></textarea>
       </div>
+      <label for="img-preview" class="form-label">Img Preview</label>
+      <div class="w-100 preview-box rounded mb-3">
+        <img :src="formData.coverImg" class="preview-img img-fluid">
+      </div>
       <div class="w-100 text-end">
         <button action="submit" class="btn btn-outline-info">Create<i class="mdi mdi-plus"></i></button>
       </div>
@@ -100,4 +104,16 @@ function resetForm() {
 </template>
 
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.preview-box {
+  height: 25vh;
+  border: 2px dotted #fad2d4;
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+</style>
