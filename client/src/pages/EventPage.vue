@@ -118,7 +118,7 @@ async function deleteTicket() {
       </div>
     </div>
     <div class="row justify-content-center gap-2">
-      <div class="col-md-8">
+      <div class="col-md-7">
         <div class="d-flex justify-content-between">
           <h1>{{ activeEvent.name }} <span v-html="activeEvent.typeIcon"></span></h1>
           <div>
@@ -143,9 +143,12 @@ async function deleteTicket() {
           <p><i class="mdi mdi-map-marker text-info"></i>{{ activeEvent.location }}</p>
         </div>
       </div>
-      <div class="col-md-2 d-flex flex-column justify-content-between">
+      <div class="col-md-3 d-flex flex-column justify-content-between">
         <div v-if="account">
-          <div class="ticket-box text-center p-2 mt-5 rounded">
+          <div class="mt-5">
+            <p v-if="isAttending" class="text-end text-success mt-5 mb-0 small">You are Attending This Event</p>
+          </div>
+          <div class="ticket-box text-center p-2 rounded">
             <h5>Interested in Going?</h5>
             <p>Grab a ticket!</p>
             <button v-if="activeEvent.isCanceled" class="btn btn-danger" disabled> Cancelled </button>
@@ -208,5 +211,9 @@ body {
 
 .mt {
   margin-top: 10em;
+}
+
+.small {
+  font-size: 12px;
 }
 </style>
