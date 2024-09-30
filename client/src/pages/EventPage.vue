@@ -179,7 +179,7 @@ async function getEventComments() {
         <div class="mt">
           <h5>See What folks are saying..</h5>
           <div class="w-100 comment-box p-2">
-            <div>
+            <div v-if="account">
               <p class="text-end text-success mb-0">Join the conversation</p>
               <form @submit.prevent="createEventComment()">
                 <div>
@@ -189,7 +189,7 @@ async function getEventComments() {
                 <div class="w-100 text-end">
                   <button class="btn btn-success mt-2" action="submit">Comment</button>
                 </div>
-              </form>
+              </form>2
             </div>
             <div v-if="activeEvent">
               <div v-for="comment in comments" :key="comment.id">
