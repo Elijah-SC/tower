@@ -189,7 +189,7 @@ async function getEventComments() {
                 <div class="w-100 text-end">
                   <button class="btn btn-success mt-2" action="submit">Comment</button>
                 </div>
-              </form>2
+              </form>
             </div>
             <div v-if="activeEvent">
               <div v-for="comment in comments" :key="comment.id">
